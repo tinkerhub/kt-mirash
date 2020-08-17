@@ -21,24 +21,40 @@ client.on("ready", () => {
 
 client.on('message', async message => {
   if (message.content.toLowerCase() === `accept` && message.channel.id === `744627218743033887`) {
-  // What to do with accept
-        message.author.send("Welcome to TinkerHub! You need your member id to get started. Please enter your member id. If you are not registered yet, please do it right away at tinkerhub.org/join. By proceeding you agree to the terms and conditions.");
-  } else if (message.channel.type == `dm`) {
+        user = message.author;
+        user.send("Hi awesome,\nKt Mirash here, I'm responsible for verifying new members to the TinkerHub Discord. \n\n **✨ Please enter the 17 digit memebership id you got on your email.** \n\n _If you are not registred yet, please do it here: https://airtable.com/shrZtgElFfhPKHem9 and wait for the confimation mail from our team. Need help? Drop a message to <#744841799498989619>_");
+        message.channel.send("We are happy that you agreed. 🤗 \n \n ** ✨Next Step:** Head to <@739398497220034601> and verify your membership to get access to all the channels.")
+        .then(async msg => {
+          msg.delete(40000);
+          message.delete(10000);
+        });
+  } else if (message.content.toLowerCase() != `accept` && message.channel.id === `744627218743033887` && !message.author.bot){
+    message.channel.send("Oops! Looks like something went wrong here. 👎\n\n**✨ Please type `Accept` to go to next step.**")
+    .then(msg => {
+      console.log(message.content);
+      message.delete(10000);
+      msg.delete(10000);
+      
+    });
+  } else if (message.channel.type == `dm` && !message.author.bot) {
     id = message.content.trim();
     console.log(id);
     user = message.author;
 
-    base('Members').find(id, async function(err, record) {
+      base('Members').find(id, async function(err, record) {
       if (err) {
         console.log(err);
         await user.send("Nice try!");
+        console.log(message);
       } else {
         if (record.fields["Discord-Status"] ===  "Active") {
           user.send("This code is already used. Please contact us at hello@tinkerhub.org for support.");
         } else {
           try {
             base('Members').update(id, {
-              "Discord-Status": "Active"
+              "Discord-Status": "Active",  
+              "UserName": message.channel.recipient.username + "#" + message.channel.recipient.discriminator,
+              "UserId" : message.channel.recipient.id
             }, function(err, record) {
               if (err) {
                 console.error(err);
@@ -49,7 +65,7 @@ client.on('message', async message => {
                 myGuild.fetchMember(message.author)
                   .then(async member => {
                     member.addRole('735193453780271135').catch(console.error);
-                    await user.send('Thanks for verifying. Now you can access all the shit!');
+                    await user.send('Welcome to the world of learning (& unlearning too). 👩‍💻 Now you can access all the channels! ❤️🧡💛💚💙💜🖤 \n \n **✨Quick tip:** Consider heading to <#744827651679846421> and do a quick introduction about yourself. ');
                   });
               }
             });
