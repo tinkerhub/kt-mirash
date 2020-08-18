@@ -23,7 +23,7 @@ client.on('message', async message => {
   if (message.content.toLowerCase() === `accept` && message.channel.id === `744627218743033887`) {
         user = message.author;
         user.send("Hi awesome,\nKt Mirash here, I'm responsible for verifying new members to the TinkerHub Discord. \n\n **✨ Please enter the 17 digit memebership id you got on your email.** \n\n _If you are not registred yet, please do it here: https://airtable.com/shrZtgElFfhPKHem9 and wait for the confimation mail from our team. Need help? Drop a message to <#744841799498989619>_");
-        message.channel.send("We are happy that you agreed. 🤗 \n \n ** ✨Next Step:** Head to <@739398497220034601> and verify your membership to get access to all the channels.")
+        message.channel.send("We are happy that you agreed. 🤗 \n \n ** ✨ Next Step:** Head to the direct message from Kt Mirash and verify your membership to get access to all the channels.")
         .then(async msg => {
           msg.delete(40000);
           message.delete(10000);
@@ -44,11 +44,11 @@ client.on('message', async message => {
       base('Members').find(id, async function(err, record) {
       if (err) {
         console.log(err);
-        await user.send("Nice try!");
+        await user.send("😢 Looks like you entered a wrong membership id. \n TIP: Please the check mail from TinkerHub and copy the 17 digit membership id.");
         console.log(message);
       } else {
         if (record.fields["Discord-Status"] ===  "Active") {
-          user.send("This code is already used. Please contact us at hello@tinkerhub.org for support.");
+          user.send("This code is already used.😞\n Please contact us at hello@tinkerhub.org for support.");
         } else {
           try {
             base('Members').update(id, {
@@ -65,7 +65,7 @@ client.on('message', async message => {
                 myGuild.fetchMember(message.author)
                   .then(async member => {
                     member.addRole('735193453780271135').catch(console.error);
-                    await user.send('Welcome to the world of learning (& unlearning too). 👩‍💻 Now you can access all the channels! ❤️🧡💛💚💙💜🖤 \n \n **✨Quick tip:** Consider heading to <#744827651679846421> and do a quick introduction about yourself. ');
+                    await user.send('✅✅✅\n\nWelcome to the world of learning (& unlearning too). 👩‍💻 Now you can access all the channels! 💜 \n \n **✨ Quick tip:** Consider heading to <#744827651679846421> and do a quick introduction about yourself. ');
                   });
               }
             });
