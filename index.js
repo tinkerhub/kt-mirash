@@ -9,8 +9,6 @@ client.login("NzM5Mzk4NDk3MjIwMDM0NjAx.XyZ4gw.OiJyn6o7Pvm9mw2z5ltGgLV_MqU");
 client.on("ready", () => {
   console.log("I am ready!");
   myGuild = client.guilds.get("735180366297563257");
-  // console.log(myGuild)
-  // console.log(client.guilds['735180366297563257']);
 });
 
 // // When a member is added
@@ -83,30 +81,8 @@ client.on('message', async message => {
 
 
 
-    
-      
-      // else {
-      //    else {
-      //   try {
-          
-              
-              
-              
-              // Updating the permissions
-              
-              
-    
-  //           });
-  //           });
-         
-  //       } 
-  //     }}
-  // });
-    
-  // } 
 
-
-
+//  വന്ന വഴി മറക്കരുത്. ഇത് ഇവിടെ കിടന്നോട്ടെ. 
 // function newFunction() {
 //   let myGuild;
 //   return myGuild;
