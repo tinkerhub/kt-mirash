@@ -1,11 +1,13 @@
+const dotenv = require('dotenv');
 const Discord = require("discord.js");
 const client = new Discord.Client();
 var Airtable = require('airtable');
-var base = new Airtable({apiKey: "keyRnMCAzv50kx8uJ"}).base('apppbhsk0pZUmRqYh');
-client.login("NzM5Mzk4NDk3MjIwMDM0NjAx.XyZ4gw.OiJyn6o7Pvm9mw2z5ltGgLV_MqU");
 
+dotenv.config()
 
+var base = new Airtable({apiKey: `${process.env.AIRTABLE_API_KEY}`}).base('apppbhsk0pZUmRqYh');
 
+client.login(process.env.DISCORD_TOKEN);
 client.on("ready", () => {
   console.log("I am ready!");
   myGuild = client.guilds.get("735180366297563257");
@@ -18,41 +20,36 @@ client.on("ready", () => {
 // });
 
 client.on('message', async message => {
-  if (message.content.toLowerCase() === `accept` && message.channel.id === `744627218743033887`) {
-        user = message.author;
-        user.send("Hi awesome,\nKt Mirash here, I'm responsible for verifying new members to the TinkerHub Discord. \n\n **✨ Please enter the 17 digit memebership id you got on your email.** \n\n _If you are not registred yet, please do it here: https://airtable.com/shrZtgElFfhPKHem9 and wait for the confimation mail from our team. Need help? Drop a message to <#744841799498989619>_");
-        message.channel.send("We are happy that you agreed. 🤗 \n \n ** ✨ Next Step:** Head to the direct message from Kt Mirash and verify your membership to get access to all the channels.")
-        .then(async msg => {
-          msg.delete(40000);
-          message.delete(10000);
-        });
-  } else if (message.content.toLowerCase() != `accept` && message.channel.id === `744627218743033887` && !message.author.bot){
-    message.channel.send("Oops! Looks like something went wrong here. 👎\n\n**✨ Please type `Accept` to go to next step.**")
-    .then(msg => {
-      console.log(message.content);
-      message.delete(10000);
-      msg.delete(10000);
-      
-    });
-  } else if (message.channel.type == `dm` && !message.author.bot) {
+  if (message.content.toLowerCase().startsWith("r") && message.channel.id === `744627218743033887`) {
     id = message.content.trim();
     console.log(id);
     user = message.author;
+    userid = user.id;
+    username = user.username + "#" + user.discriminator;
+    console.log(`This is user id ${username}`);
 
       base('Members').find(id, async function(err, record) {
       if (err) {
-        console.log(err);
-        await user.send("😢 Looks like you entered a wrong membership id. \n TIP: Please the check mail from TinkerHub and copy the 17 digit membership id.");
-        console.log(message);
+        // console.log(err);
+        message.channel.send(`<@${userid}>, looks like you entered a wrong membership id. 😢 \n **TIP:** Please check for SMS / mail from TinkerHub and copy the 17 digit membership id.`)
+        .then(async msg => {
+          msg.delete(40000);
+          message.delete(5000);
+        });
+        console.log("done");
       } else {
         if (record.fields["Discord-Status"] ===  "Active") {
-          user.send("This code is already used.😞\n Please contact us at hello@tinkerhub.org for support.");
+          message.channel.send(`<@${userid}>, this code has already been used. 😞\n Please contact us at hello@tinkerhub.org for support.`)
+          .then(async msg => {
+            msg.delete(40000);
+            message.delete(5000);
+          });
         } else {
           try {
             base('Members').update(id, {
               "Discord-Status": "Active",  
-              "UserName": message.channel.recipient.username + "#" + message.channel.recipient.discriminator,
-              "UserId" : message.channel.recipient.id
+              "UserName": username,
+              "UserId" : userid
             }, function(err, record) {
               if (err) {
                 console.error(err);
@@ -63,7 +60,21 @@ client.on('message', async message => {
                 myGuild.fetchMember(message.author)
                   .then(async member => {
                     member.addRole('735193453780271135').catch(console.error);
-                    await user.send('✅✅✅\n\nWelcome to the world of learning (& unlearning too). 👩‍💻 Now you can access all the channels! 💜 \n \n **✨ Quick tip:** Consider heading to <#744827651679846421> and do a quick introduction about yourself. ');
+                    await user.send(`Howdy, awesome human! Congratulations on making it this far! 🎉 Welcome to the world of learning (& unlearning too). **Now you can access all the channels!** 💜 \n
+                    📚 Are you looking for resources to learn code? Head over to your favourite code channel: <#747859574199156777>, <#735203255671324863>, <#760758605627916318> etc.
+                    👫 If you're looking for a friend to learn with, check out <#735214780901752913>
+                    🏅 Bored? Try your hand at one of our challenges here: <#769099260330901504>
+                    🚀 Love opportunities? Jump to <#760177336909430814> for the latest and greatest stuff.
+                    🎮 Here to know what's cooking in tech? Read some <#747865817114345562>
+                    🎨 Check out the dope projects that our community is building: <#735206546920833185>
+                    
+                    ✨Quick tip: Consider heading to <#744827651679846421> and giving a quick introduction about yourself first.
+                    `);
+                    message.channel.send(`<@${userid}>,\n\n ✅ **Verification is successful!** Now you can access all the channels. 💜 \n\n ✨ Quick tip:** Consider heading to <#744827651679846421> and do a quick introduction about yourself. `)
+                    .then(async msg => {
+                      msg.delete(40000);
+                      message.delete(5000);
+                    });
                   });
               }
             });
@@ -73,9 +84,15 @@ client.on('message', async message => {
         }
       }
     });
-
-  } else {
+  
+} else if (!message.author.bot) {
     console.log("Moonchi");
+    message.channel.send("Oops! Looks like something went wrong. 👎\n\n Please enter your 17 digit membership id to verify your identity.")
+  .then(msg => {
+  console.log(message.content);
+  message.delete(10000);
+  msg.delete(10000);
+  });
   }
 });
 
@@ -112,4 +129,8 @@ client.on('message', async message => {
 //   }
   
 // });
+
+
+
+
 
