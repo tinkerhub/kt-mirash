@@ -17,7 +17,7 @@ client.on("ready", () => {
 // client.on('guildMemberAdd', member => {
 //   // Send the first welcome message
 //   member.send("Welcome to TinkerHub! You need your member id to get started. Please enter your member id. If you are not registered yet, please do it right away at tinkerhub.org/join. By proceeding you agree to the terms and conditions.");
-// });
+// }); 
 
 client.on('message', async message => {
   if (message.content.toLowerCase().startsWith("r") && message.channel.id === `744627218743033887`) {
@@ -85,7 +85,7 @@ client.on('message', async message => {
       }
     });
   
-} else if (!message.author.bot) {
+} else if (!message.author.bot && message.channel.id === `744627218743033887`) {
     console.log("Moonchi");
     message.channel.send("Oops! Looks like something went wrong. 👎\n\n Please enter your 17 digit membership id to verify your identity.")
   .then(msg => {
