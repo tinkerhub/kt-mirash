@@ -1,0 +1,3 @@
+exports.mainEnum = {
+    discordActiveStatus : "Active"
+}
