@@ -49,37 +49,36 @@ exports.newMembers = async (myGuild, base, message, client) => {
                 let peru = myGuild.members.cache.get(userid);
                 peru = peru.user.username;
 
-                await myGuild.members.cache.get(userid).setNickname(`${firstname} 🎓`)
+                await myGuild.members.cache.get(userid).setNickname(`${firstname} 🎓`);
 
-                await member.roles.add(memberRoleID)
+                await member.roles.add(memberRoleID);
 
-                await user.send(personalMsg(userID))
+                await user.send(personalMsg(userID));
 
-                await errorMsg(message, verfiyMsg(userID))
+                await errorMsg(message, verfiyMsg(userID));
+
+                if (record.fields.CampusCommunityActive === "Yes") {
+
+                    if (record.fields.CollegeRole) {
+                        await member.roles.add(record.fields.CollegeRole);
+                    }
+                    await member.roles.add(campusCommunityRoleID);
+                }
+
+                if (record.fields["CampusLead"] === true) {
+                    await member.roles.add(campusLeadRoleID);
+                }
+
+                if (record.fields['Pronoun'] === "She/Her") {
+                    await member.roles.add(femaleRoleID);
+                }
 
             });
-
-
-            if (record.fields.CampusCommunityActive === "Yes") {
-
-                await member.roles.add(record.fields.CollegeRole);
-
-                await member.roles.add(campusCommunityRoleID);
-
-            }
-
-            if (record.fields["CampusLead"] === true) {
-                await member.roles.add(campusLeadRoleID);
-            }
-
-            if (record.fields['Pronoun'] === "She/Her") {
-                await member.roles.add(femaleRoleID);
-            }
 
         });
     } catch (error) {
 
-        await client.channels.cache.get(errorHandleChannelID).send(`${error.toString()} auth : ${user} userName : ${username}`  );
+        await client.channels.cache.get(errorHandleChannelID).send(`${error.toString()} auth : ${user} userName : ${username}`);
 
     }
 
