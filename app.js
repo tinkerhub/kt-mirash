@@ -1,10 +1,8 @@
 // * code for the rewiring
 const dotenv = require('dotenv');
-const Discord = require("discord.js");
-const client = new Discord.Client();
 var Airtable = require('airtable');
 const config = require('config');
-const { setUserRole } = require("./airtable/setUserRole");
+const client = require('./config/discordBot');
 const { newMembers } = require('./discord/newMemeber');
 
 const { wrongId } = require("./config/var");
@@ -17,15 +15,13 @@ const straingGuildID = config.get("startingChannel");
 
 dotenv.config();
 
-client.login(process.env.DISCORD_TOKEN);
-
 client.on("ready", () => {
     console.log("I am ready!");
 });
 
 client.on('message', async (message) => {
 
-
+    // ? for reg user
     if (message.content.toLowerCase().startsWith("r") &&
         message.channel.id === straingGuildID) {
 
