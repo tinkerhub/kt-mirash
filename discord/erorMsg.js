@@ -5,7 +5,7 @@ exports.errorMsg = async (message, userSendMsg) => {
       message.delete({ timeout: 5000 });
    } catch (error) {
       
-      throw error;
+      console.log(error.toString());
    }
 
 };
