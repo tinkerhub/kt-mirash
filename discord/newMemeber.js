@@ -32,9 +32,9 @@ exports.newMembers = async(myGuild, base, message, client) => {
                 return null;
             }
 
-
             let firstname = record.get('FullName');
             let member = await myGuild.members.fetch(userID);
+
 
             // * for user update
             base('Members').update(id, {
@@ -47,7 +47,6 @@ exports.newMembers = async(myGuild, base, message, client) => {
                     console.error(`update base ${err}`);
                     return;
                 }
-
                 await myGuild.members.cache.get(userID).setNickname(`${firstname} 🎓`)
                 await member.roles.add(memberRoleID)
                 await user.send(personalMsg(userID))
@@ -83,9 +82,10 @@ exports.newMembers = async(myGuild, base, message, client) => {
 
         })
     } catch (error) {
-        console.log(`newMembers.js : newMembers() : ${error.toString()}`);
 
         await client.channels.cache.get(errorHandleChannelID).send(`${error.toString()} auth : ${user} userName : ${username}`);
+
+        console.log(`newMembers.js : newMembers() : ${error.toString()}`);
 
     }
 

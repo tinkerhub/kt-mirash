@@ -20,7 +20,6 @@ client.on("ready", () => {
 });
 
 client.on('message', async(message) => {
-
     // ? for reg user
     if (message.content.toLowerCase().startsWith("r") &&
         message.channel.id === straingGuildID && message.author != '735045662672027718') {
