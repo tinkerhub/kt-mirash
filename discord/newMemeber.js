@@ -9,7 +9,7 @@ const { errorMsg } = require("../discord/erorMsg");
 const { memberWrongIDMsg, memberWithAlreadyIn, personalMsg, verfiyMsg } = require("../config/var");
 
 
-exports.newMembers = async (myGuild, base, message, client) => {
+exports.newMembers = async(myGuild, base, message, client) => {
 
     const id = message.content.trim();
     const user = message.author;
@@ -18,7 +18,7 @@ exports.newMembers = async (myGuild, base, message, client) => {
 
     try {
         // ? for finding user id
-        base('Members').find(id, async function (err, record) {
+        base('Members').find(id, async function(err, record) {
 
             if (err) {
                 await errorMsg(message, memberWrongIDMsg(userID));
@@ -30,40 +30,31 @@ exports.newMembers = async (myGuild, base, message, client) => {
                 return null;
             }
 
-            let userid = record.get('UserId');
             let firstname = record.get('FullName');
-            let member = await myGuild.members.fetch(userid);
+            let member = await myGuild.members.fetch(userID);
 
             // * for user update
             base('Members').update(id, {
                 "Discord-Status": "Active",
                 "UserName": username,
-                "UserId": userid
-            }, async function (err, record) {
+                "UserId": userID
+            }, async function(err, record) {
 
                 if (err) {
                     console.error(`update base ${err}`);
                     return;
                 }
 
-                let peru = myGuild.members.cache.get(userid);
-                peru = peru.user.username;
-
-                await myGuild.members.cache.get(userid).setNickname(`${firstname} 🎓`)
-
+                await myGuild.members.cache.get(userID).setNickname(`${firstname} 🎓`)
                 await member.roles.add(memberRoleID)
-
                 await user.send(personalMsg(userID))
-
                 await errorMsg(message, verfiyMsg(userID))
 
             });
 
 
             if (record.fields.CampusCommunityActive === "Yes") {
-
-                await member.roles.add(record.fields.CollegeRole);
-
+                // await member.roles.add(record.fields.CollegeRole);
                 await member.roles.add(campusCommunityRoleID);
 
             }
@@ -79,7 +70,7 @@ exports.newMembers = async (myGuild, base, message, client) => {
         });
     } catch (error) {
 
-        await client.channels.cache.get(errorHandleChannelID).send(`${error.toString()} auth : ${user} userName : ${username}`  );
+        await client.channels.cache.get(errorHandleChannelID).send(`${error.toString()} auth : ${user} userName : ${username}`);
 
     }
 
