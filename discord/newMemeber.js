@@ -7,20 +7,22 @@ const errorHandleChannelID = config.get('errorHandleChannelID');
 
 const { errorMsg } = require("../discord/erorMsg");
 const { memberWrongIDMsg, memberWithAlreadyIn, personalMsg, verfiyMsg } = require("../config/var");
+const { msgToChannel } = require('./msgToChannel');
 
 
 exports.newMembers = async(myGuild, base, message, client) => {
 
-    const id = message.content.trim();
-    const user = message.author;
-    const userID = user.id;
-    const username = user.username + "#" + user.discriminator;
-
     try {
+        const id = message.content.trim();
+        const user = message.author;
+        const userID = user.id;
+        const username = user.username + "#" + user.discriminator;
+
         // ? for finding user id
         base('Members').find(id, async function(err, record) {
 
             if (err) {
+                console.log(err);
                 await errorMsg(message, memberWrongIDMsg(userID));
                 return null;
             }
@@ -32,6 +34,7 @@ exports.newMembers = async(myGuild, base, message, client) => {
 
             let firstname = record.get('FullName');
             let member = await myGuild.members.fetch(userID);
+
 
             // * for user update
             base('Members').update(id, {
@@ -45,32 +48,48 @@ exports.newMembers = async(myGuild, base, message, client) => {
                     return;
                 }
 
+
                 await myGuild.members.cache.get(userID).setNickname(`${firstname} 🎓`)
                 await member.roles.add(memberRoleID)
                 await user.send(personalMsg(userID))
                 await errorMsg(message, verfiyMsg(userID))
 
-            });
 
+
+                // ? if in campus Community add campus and campus community Role
+                if (record.fields.CampusCommunityActive === "Yes") {
 
             if (record.fields.CampusCommunityActive === "Yes") {
                 // await member.roles.add(record.fields.CollegeRole);
                 await member.roles.add(campusCommunityRoleID);
 
-            }
 
-            if (record.fields["CampusLead"] === true) {
-                await member.roles.add(campusLeadRoleID);
-            }
+                // ? giving campus Lead Role
+                if (record.fields["CampusLead"] === true) {
+                    await member.roles.add(campusLeadRoleID).catch(async(err) => {
+                        await msgToChannel(client, errorHandleChannelID, user, username, err);
+                        throw err;
+                    });
+                }
 
-            if (record.fields['Pronoun'] === "She/Her") {
-                await member.roles.add(femaleRoleID);
-            }
+                //  ? adding womens role
+                if (record.fields['Pronoun'] === "She/Her") {
+                    await member.roles.add(femaleRoleID).catch(async(err) => {
+                        await msgToChannel(client, errorHandleChannelID, user, username, err);
+                        throw err;
+                    });
+                }
 
-        });
+            })
+
+        })
     } catch (error) {
 
+
         await client.channels.cache.get(errorHandleChannelID).send(`${error.toString()} auth : ${user} userName : ${username}`);
+
+
+        console.log(`newMembers.js : newMembers() : ${error.toString()}`);
 
     }
 
