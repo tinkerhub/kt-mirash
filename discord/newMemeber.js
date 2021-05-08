@@ -32,18 +32,15 @@ exports.newMembers = async(myGuild, base, message, client) => {
                 return null;
             }
 
-            let userid = user.id;
             let firstname = record.get('FullName');
-            let member = await myGuild.members.fetch(userid).catch(async(err) => {
-                await msgToChannel(client, errorHandleChannelID, user, username, err);
-                throw err;
-            });
+            let member = await myGuild.members.fetch(userID);
+
 
             // * for user update
             base('Members').update(id, {
                 "Discord-Status": "Active",
                 "UserName": username,
-                "UserId": userid
+                "UserId": userID
             }, async function(err, record) {
 
                 if (err) {
@@ -51,48 +48,21 @@ exports.newMembers = async(myGuild, base, message, client) => {
                     return;
                 }
 
-                // ? setting nickname
-                await myGuild.members.cache.get(userid).setNickname(`${firstname} 🎓`).catch(async(err) => {
-                    await msgToChannel(client, errorHandleChannelID, user, username, err);
-                    throw err;
-                });
 
-                // ? adding Member Role
-                await member.roles.add(memberRoleID).catch(async(err) => {
-                    await msgToChannel(client, errorHandleChannelID, user, username, err);
-                    throw err;
-                });
+                await myGuild.members.cache.get(userID).setNickname(`${firstname} 🎓`)
+                await member.roles.add(memberRoleID)
+                await user.send(personalMsg(userID))
+                await errorMsg(message, verfiyMsg(userID))
 
-                // ? on verify SucessFull Msg
-                await errorMsg(message, verfiyMsg(userID)).catch(async(err) => {
-                    await msgToChannel(client, errorHandleChannelID, user, username, err);
-                    throw err;
-                });
-
-
-                // ? sending personal Msg
-                await user.send(personalMsg(userID)).catch(async(err) => {
-                    await msgToChannel(client, errorHandleChannelID, user, username, err);
-                    throw err;
-                });;
 
 
                 // ? if in campus Community add campus and campus community Role
                 if (record.fields.CampusCommunityActive === "Yes") {
 
-                    if (record.fields.CollegeRole) {
-                        await member.roles.add(record.fields.CollegeRole).catch(async(err) => {
-                            await msgToChannel(client, errorHandleChannelID, user, username, err);
-                            throw err;
-                        });
-                    }
+            if (record.fields.CampusCommunityActive === "Yes") {
+                // await member.roles.add(record.fields.CollegeRole);
+                await member.roles.add(campusCommunityRoleID);
 
-                    await member.roles.add(campusCommunityRoleID).catch(async(err) => {
-                        await msgToChannel(client, errorHandleChannelID, user, username, err);
-                        throw err;
-                    });
-
-                }
 
                 // ? giving campus Lead Role
                 if (record.fields["CampusLead"] === true) {
@@ -115,7 +85,12 @@ exports.newMembers = async(myGuild, base, message, client) => {
         })
     } catch (error) {
 
+
+        await client.channels.cache.get(errorHandleChannelID).send(`${error.toString()} auth : ${user} userName : ${username}`);
+
+
         console.log(`newMembers.js : newMembers() : ${error.toString()}`);
+
     }
 
 };
