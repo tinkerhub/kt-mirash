@@ -29,6 +29,7 @@ exports.newMembers = async(myGuild, base, message, client) => {
 
             if (record.fields["Discord-Status"] === "Active") {
                 await errorMsg(message, memberWithAlreadyIn(userID));
+                await client.channels.cache.get(errorHandleChannelID).send(`User already active. auth : ${user} userName : ${username}`);
                 return null;
             }
 
@@ -47,38 +48,39 @@ exports.newMembers = async(myGuild, base, message, client) => {
                     console.error(`update base ${err}`);
                     return;
                 }
-                await myGuild.members.cache.get(userID).setNickname(`${firstname} 🎓`)
                 await member.roles.add(memberRoleID)
                 await user.send(personalMsg(userID))
+                await myGuild.members.cache.get(userID).setNickname(`${firstname} 🎓`)
                 await errorMsg(message, verfiyMsg(userID))
 
 
                 // ? if in campus Community add campus and campus community Role
                 if (record.fields.CampusCommunityActive === "Yes") {
 
-            if (record.fields.CampusCommunityActive === "Yes") {
-                // await member.roles.add(record.fields.CollegeRole);
-                await member.roles.add(campusCommunityRoleID);
+                    if (record.fields.CampusCommunityActive === "Yes") {
+                        // await member.roles.add(record.fields.CollegeRole);
+                        await member.roles.add(campusCommunityRoleID);
 
 
-                // ? giving campus Lead Role
-                if (record.fields["CampusLead"] === true) {
-                    await member.roles.add(campusLeadRoleID).catch(async(err) => {
-                        await msgToChannel(client, errorHandleChannelID, user, username, err);
-                        throw err;
-                    });
+                        // ? giving campus Lead Role
+                        if (record.fields["CampusLead"] === true) {
+                            await member.roles.add(campusLeadRoleID).catch(async(err) => {
+                                await msgToChannel(client, errorHandleChannelID, user, username, err);
+                                throw err;
+                            });
+                        }
+
+                        //  ? adding womens role
+                        if (record.fields['Pronoun'] === "She/Her") {
+                            await member.roles.add(femaleRoleID).catch(async(err) => {
+                                await msgToChannel(client, errorHandleChannelID, user, username, err);
+                                throw err;
+                            });
+                        }
+
+                    }
                 }
-
-                //  ? adding womens role
-                if (record.fields['Pronoun'] === "She/Her") {
-                    await member.roles.add(femaleRoleID).catch(async(err) => {
-                        await msgToChannel(client, errorHandleChannelID, user, username, err);
-                        throw err;
-                    });
-                }
-
-            }}
-        })
+            })
 
         })
     } catch (error) {

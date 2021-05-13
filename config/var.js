@@ -8,7 +8,10 @@ exports.memberWithAlreadyIn = (userID) => {
 
 exports.personalMsg = (userID) => {
 
-    return `Howdy, awesome human! Congratulations on making it this far! 🎉 Welcome to the world of learning (& unlearning too). **Now you can access all the channels!** 💜 \n
+    return `Howdy, awesome human! 
+    ✅ **Verification is successful!** Now you can access all the channels. 💜 \n
+    
+    Congratulations on making it this far! 🎉 Welcome to the world of learning (& unlearning too). **Now you can access all the channels!** 💜 \n
     📚 Are you looking for resources to learn code? Head over to your favourite code channel: <#747859574199156777>, <#735203255671324863>, <#760758605627916318> etc.
     👫 If you're looking for a friend to learn with, check out <#735214780901752913>
     🏅 Bored? Try your hand at one of our challenges here: <#769099260330901504>
@@ -21,7 +24,7 @@ exports.personalMsg = (userID) => {
 
 exports.verfiyMsg = (userID) => {
 
-    return `<@${userID}>,\n\n ✅ **Verification is successful!** Now you can access all the channels. 💜 \n\n ✨ Quick tip:** Consider heading to <#744827651679846421> and do a quick introduction about yourself.`;
+    return `<@${userID}>,\n ✅ **Verification is successful!** Now you can access all the channels. 💜 \n\n ✨ Quick tip:** Consider heading to <#744827651679846421> and do a quick introduction about yourself.`;
 };
 
 exports.wrongId = (userID) => {
