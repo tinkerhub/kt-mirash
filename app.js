@@ -22,7 +22,7 @@ client.on("ready", () => {
 client.on('message', async(message) => {
     // ? for reg user
     if (message.content.toLowerCase().startsWith("r") &&
-        message.channel.id === straingGuildID && message.author != '735045662672027718') {
+        message.channel.id === straingGuildID) {
 
         let myGuild = client.guilds.cache.get(guildID);
         let base = new Airtable({ apiKey: `${process.env.AIRTABLE_API_KEY}` }).base(airtableDB);
