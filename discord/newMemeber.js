@@ -49,9 +49,10 @@ exports.newMembers = async(myGuild, base, message, client) => {
                     return;
                 }
                 await member.roles.add(memberRoleID)
+                await errorMsg(message, verfiyMsg(userID))
                 await user.send(personalMsg(userID))
                 await myGuild.members.cache.get(userID).setNickname(`${firstname} 🎓`)
-                await errorMsg(message, verfiyMsg(userID))
+
 
 
                 // ? if in campus Community add campus and campus community Role
