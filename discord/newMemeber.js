@@ -29,7 +29,7 @@ exports.newMembers = async(myGuild, base, message, client) => {
 
             if (record.fields["Discord-Status"] === "Active") {
                 await errorMsg(message, memberWithAlreadyIn(userID));
-                await client.channels.cache.get(errorHandleChannelID).send(`User already active. auth : ${user} userName : ${username}`);
+                await client.channels.cache.get(errorHandleChannelID).send(`♻️ User already active. auth : ${user} userName : ${username}`);
                 return null;
             }
 
