@@ -29,7 +29,7 @@ client.on('message', async(message) => {
 
         await newMembers(myGuild, base, message, client);
 
-    } else if (!message.author.bot && message.channel.id === `744627218743033887` && message.author != '735045662672027718') {
+    } else if (!message.author.bot && message.channel.id === `744627218743033887` && message.author.id != '735045662672027718') {
         await errorMsg(message, wrongId('user'));
     }
 
