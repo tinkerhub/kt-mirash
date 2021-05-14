@@ -51,7 +51,7 @@ exports.newMembers = async(myGuild, base, message, client) => {
                 await member.roles.add(memberRoleID)
                 await errorMsg(message, verfiyMsg(userID))
                 await user.send(personalMsg(userID))
-                await myGuild.members.cache.get(userID).setNickname(`${firstname} 🎓`)
+                await myGuild.members.cache.get(userID).setNickname(`${firstname}`)
 
 
 
@@ -61,6 +61,7 @@ exports.newMembers = async(myGuild, base, message, client) => {
                     if (record.fields.CampusCommunityActive === "Yes") {
                         // await member.roles.add(record.fields.CollegeRole);
                         await member.roles.add(campusCommunityRoleID);
+                        await myGuild.members.cache.get(userID).setNickname(`${firstname}`)
 
 
                         // ? giving campus Lead Role
