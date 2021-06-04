@@ -73,12 +73,12 @@ exports.newMembers = async(myGuild, base, message, client) => {
                         }
 
                         //  ? adding womens role
-                        if (record.fields['Pronoun'] === "She/Her") {
-                            await member.roles.add(femaleRoleID).catch(async(err) => {
-                                await msgToChannel(client, errorHandleChannelID, user, username, err);
-                                throw err;
-                            });
-                        }
+                        // if (record.fields['Pronoun'] === "She/Her") {
+                        //     await member.roles.add(femaleRoleID).catch(async(err) => {
+                        //         await msgToChannel(client, errorHandleChannelID, user, username, err);
+                        //         throw err;
+                        //     });
+                        // }
 
                     }
                 }
