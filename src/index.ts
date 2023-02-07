@@ -29,6 +29,6 @@ client.on("message", async (message) => {
 		message.channel.id === `744627218743033887` &&
 		message.author.id !== "735045662672027718"
 	) {
-		await errorMsg(message, wrongId);
+		await errorMsg(message, wrongId());
 	}
 });
