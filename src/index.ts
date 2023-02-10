@@ -7,18 +7,21 @@ import { errorMsg } from "./helper/errorHandler";
 // load env file
 dotenv.config();
 
-export const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+const client = new Client({
+	intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
+});
 client.login(DISCORD_TOKEN);
 
 client.on("ready", () => {
-	console.log(`Logged in`);
+	console.log(`Logged in as ${client.user?.tag}`);
 });
 
 // user verification based on nocodb id
-client.on("message", async (message) => {
-	if (message.channel.id === startingChannel) {
-		const myGuild = client.guilds.cache.get(guildID);
-
+client.on("messageCreate", async (message) => {
+	console.log(startingChannel, "start channel is");
+	console.log(message.channel.id);
+	if (message.channel.id === startingChannel && !message.author.bot) {
+		const guild = client.guilds.cache.get(guildID);
 		// TODO
 		// send userID to nocodb api
 		// verify if user exist ?

@@ -1,5 +1,11 @@
+import dotenv from "dotenv";
+
+// verifying token is loaded correctly
+// kinda like 2step verification🚶‍♂️
+dotenv.config();
+
 const guildID = process.env.guildID!;
-const startingChannel = process.env.startingChannel;
+const startingChannel = process.env.START_CHANNEL;
 const campusCommunityRoleID = process.env.campusCommunityRoleID;
 const memberRoleID = process.env.memberRoleID;
 const campusLeadRoleID = process.env.campusLeadRoleID;
