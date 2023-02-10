@@ -3,6 +3,7 @@ import { Client, GatewayIntentBits } from "discord.js";
 import { DISCORD_TOKEN, startingChannel, guildID } from "./config";
 import { wrongId } from "./config/message";
 import { errorMsg } from "./helper/errorHandler";
+import { newMembers } from "./helper/newMember";
 
 // load env file
 dotenv.config();
@@ -22,11 +23,8 @@ client.on("messageCreate", async (message) => {
 	console.log(message.channel.id);
 	if (message.channel.id === startingChannel && !message.author.bot) {
 		const guild = client.guilds.cache.get(guildID);
-		// TODO
-		// send userID to nocodb api
-		// verify if user exist ?
-		// if user exist assign role
-		// DONE
+		if (!guild) throw new Error("Could not find guild");
+		newMembers(guild, message, client);
 	} else if (
 		!message.author.bot &&
 		message.channel.id === `744627218743033887` &&
