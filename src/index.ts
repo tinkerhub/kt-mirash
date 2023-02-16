@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-import { Client, GatewayIntentBits } from "discord.js";
+import { Client, GatewayIntentBits, Partials } from "discord.js";
 import { DISCORD_TOKEN, startingChannel, guildID } from "./config";
 import { wrongId } from "./config/message";
 import { errorMsg } from "./helper/errorHandler";
@@ -9,7 +9,13 @@ import { newMembers } from "./helper/newMember";
 dotenv.config();
 
 const client = new Client({
-	intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
+	intents: [
+		GatewayIntentBits.DirectMessages,
+		GatewayIntentBits.Guilds,
+		GatewayIntentBits.GuildMessages,
+		GatewayIntentBits.MessageContent,
+	],
+	partials: [Partials.Channel],
 });
 client.login(DISCORD_TOKEN);
 
@@ -19,11 +25,9 @@ client.on("ready", () => {
 
 // user verification based on nocodb id
 client.on("messageCreate", async (message) => {
-	console.log(startingChannel, "start channel is");
-	console.log(message.channel.id);
 	if (message.channel.id === startingChannel && !message.author.bot) {
 		const guild = client.guilds.cache.get(guildID);
-		if (!guild) throw new Error("Could not find guild");
+		if (!guild) throw new Error("Could not find guild check your env");
 		newMembers(guild, message, client);
 	} else if (
 		!message.author.bot &&

@@ -1,5 +1,5 @@
 const memberWrongIDMsg = (userID) => {
-	return `<@${userID}>, looks like you entered a wrong membership id. 😢 \n **TIP:** Please check for SMS / mail from TinkerHub and copy the 17 digit membership id.`;
+	return `<@${userID}>, looks like you entered a wrong membership id. 😢 \n **TIP:** Please check for SMS / mail from TinkerHub and copy the  membership id.`;
 };
 
 const memberWithAlreadyIn = (userID) => {

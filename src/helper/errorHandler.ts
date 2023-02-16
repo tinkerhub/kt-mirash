@@ -1,8 +1,6 @@
-export const errorMsg = async (message, userSendMsg) => {
+export const errorMsg = async (message, userSendMsg: string) => {
 	try {
-		const msg = await message.channel.send(userSendMsg);
-		msg.delete({ timeout: 10000 });
-		message.delete({ timeout: 10000 });
+		await message.channel.send(userSendMsg);
 	} catch (error) {
 		console.log(error.toString());
 	}

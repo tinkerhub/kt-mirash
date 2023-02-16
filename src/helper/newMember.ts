@@ -4,15 +4,16 @@ import {
 	memberWrongIDMsg,
 	personalMsg,
 	verfiyMsg,
-} from "src/config/message";
+} from "../config/message";
 import { errorMsg } from "./errorHandler";
 import {
-	memberRoleID,
-	campusLeadRoleID,
 	campusCommunityRoleID,
+	campusLeadRoleID,
 	errorHandleChannelID,
+	memberRoleID,
 } from "../config";
 import { msgToChannel } from "./msgToChannel";
+import { nocodbApiHanlder } from "../config/apiHandler";
 
 export const newMembers = async (myGuild: Guild, message: Message, client) => {
 	try {
@@ -21,79 +22,49 @@ export const newMembers = async (myGuild: Guild, message: Message, client) => {
 		const userID = user.id;
 		const username = user.username + "#" + user.discriminator;
 
-		// ? for finding user id
-		base("Members").find(id, async function (err, record) {
-			if (err) {
-				console.log(err);
-				await errorMsg(message, memberWrongIDMsg(userID));
-				return null;
-			}
+		// accessing the databse through nocodb rest api
 
-			if (record.fields["Discord-Status"] === "Active") {
-				await errorMsg(message, memberWithAlreadyIn(userID));
-				await client.channels.cache
-					.get(errorHandleChannelID)
-					.send(
-						`♻️ User already active. auth : ${user} userName : ${username}`,
-					);
-				return null;
-			}
+		const { data: db } = await nocodbApiHanlder.get(
+			`/db/data/v1/platform/User/${id}`,
+		);
+		if (db.discordActive) {
+			await errorMsg(message, memberWithAlreadyIn(userID));
+		}
 
-			let firstname = record.get("FullName");
-			const member = await myGuild.members.fetch(userID);
+		// else add role to user in discord
+		const member = await myGuild.members.fetch(userID);
+		await member.roles.add(memberRoleID);
 
-			// * for user update
-			base("Members").update(
-				id,
-				{
-					"Discord-Status": "Active",
-					UserName: username,
-					UserId: userID,
-				},
-				async function (err, record) {
-					if (err) {
-						console.error(`update base ${err}`);
-						return;
-					}
-					await member.roles.add(memberRoleID);
-					await errorMsg(message, verfiyMsg(userID));
-					await user.send(personalMsg());
-					await myGuild.members.cache
-						.get(userID)
-						.setNickname(`${firstname}`);
+		// if the person is a student
+		if (db.description === "Student") {
+			await member.roles.add(campusCommunityRoleID);
+			const fistName = db.name.split(" ")[0];
+			message?.member ? message.member.setNickname(fistName) : null;
+		}
+		// if campusLead
+		if (db.campusLead === true) {
+			await member.roles.add(campusLeadRoleID).catch(async (err) => {
+				await msgToChannel(
+					client,
+					errorHandleChannelID,
+					user,
+					username,
+					err,
+				);
+			});
+		}
 
-					// ? if in campus Community add campus and campus community Role
-					if (record.fields.CampusCommunityActive === "Yes") {
-						if (record.fields.CampusCommunityActive === "Yes") {
-							// await member.roles.add(record.fields.CollegeRole);
-							await member.roles.add(campusCommunityRoleID);
-							await myGuild.members.cache
-								.get(userID)
-								.setNickname(`${firstname}`);
-
-							// ? giving campus Lead Role
-							if (record.fields["CampusLead"] === true) {
-								await member.roles
-									.add(campusLeadRoleID)
-									.catch(async (err) => {
-										await msgToChannel(
-											client,
-											errorHandleChannelID,
-											user,
-											username,
-											err,
-										);
-										throw err;
-									});
-							}
-						}
-					}
-				},
-			);
+		// changing the discord active to true in database
+		await nocodbApiHanlder.patch(`/db/data/v1/platform/User/${id}`, {
+			discordActive: true,
 		});
-	} catch (error) {
-		await client.channels.cache
-			.get(errorHandleChannelID)
-			.send(`${error.toString()} auth : ${user} userName : ${username}`);
+
+		// showing user that verification successfull
+		await errorMsg(message, verfiyMsg(userID));
+		// sending verification message to user personally
+		await user.send(personalMsg());
+	} catch {
+		const id = message.content.trim();
+		await errorMsg(message, memberWrongIDMsg(id));
 	}
 };
