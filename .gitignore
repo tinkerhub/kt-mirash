@@ -1,5 +1,4 @@
-# Ignore Mac system files
-.DS_store
-
-# Ignore files related to API keys
+node_modules/
+# Keep environment variables out of version control
 .env
+/dist

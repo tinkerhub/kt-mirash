@@ -1,19 +1,47 @@
 {
-  "name": "discord-campus-update",
+  "name": "kt-mirash",
   "version": "1.0.0",
-  "description": "",
+  "description": "Discord bot",
   "main": "index.js",
   "scripts": {
-    "start": "node app.js",
-    "dev": "nodemon app.js"
+    "start": "node dist/index.js",
+    "watch": "tsc -w",
+    "dev": "nodemon dist/index.js",
+    "build": "tsc",
+    "lint": "eslint ./src --ext .js,.ts",
+    "lint-fix": "eslint ./src --ext .js,.ts --fix",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tinkerhub/kt-mirash.git"
+  },
+  "keywords": [
+    "discordjs"
+  ],
+  "author": "tinkerhub",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tinkerhub/kt-mirash/issues"
+  },
+  "homepage": "https://github.com/tinkerhub/kt-mirash#readme",
+  "devDependencies": {
+    "@commitlint/cli": "^17.4.2",
+    "@commitlint/config-conventional": "^17.4.2",
+    "@types/node": "^18.13.0",
+    "@typescript-eslint/eslint-plugin": "^5.51.0",
+    "@typescript-eslint/parser": "^5.51.0",
+    "eslint": "^8.33.0",
+    "eslint-config-prettier": "^8.6.0",
+    "eslint-plugin-import": "^2.27.5",
+    "husky": "^8.0.3",
+    "prettier": "^2.8.3",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.9.5"
+  },
   "dependencies": {
-    "airtable": "^0.10.1",
-    "config": "^3.3.6",
-    "discord.js": "^12.5.3",
-    "dotenv": "^8.2.0",
-    "nodemon": "^2.0.7"
+    "axios": "^1.3.2",
+    "discord.js": "^14.7.1",
+    "dotenv": "^16.0.3"
   }
 }
