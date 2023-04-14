@@ -27,8 +27,9 @@ export const newMembers = async (myGuild: Guild, message: Message, client) => {
 		const { data: db } = await nocodbApiHanlder.get(
 			`/db/data/v1/platform/User/${id}`,
 		);
+
 		if (db.discordActive) {
-			await errorMsg(message, memberWithAlreadyIn(userID));
+			return await errorMsg(message, memberWithAlreadyIn(userID));
 		}
 
 		// else add role to user in discord
@@ -64,6 +65,7 @@ export const newMembers = async (myGuild: Guild, message: Message, client) => {
 		// sending verification message to user personally
 		await user.send(personalMsg());
 	} catch {
+		console.log("Error");
 		const id = message.content.trim();
 		await errorMsg(message, memberWrongIDMsg(id));
 	}
