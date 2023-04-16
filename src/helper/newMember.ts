@@ -36,7 +36,7 @@ export const newMembers = async (myGuild: Guild, message: Message, client) => {
 		const member = await myGuild.members.fetch(userID);
 		await member.roles.add(memberRoleID);
 
-		// if the person is a student
+		// // if the person is a student
 		if (db.description === "Student") {
 			await member.roles.add(campusCommunityRoleID);
 			const fistName = db.name.split(" ")[0];
@@ -64,9 +64,27 @@ export const newMembers = async (myGuild: Guild, message: Message, client) => {
 		await errorMsg(message, verfiyMsg(userID));
 		// sending verification message to user personally
 		await user.send(personalMsg());
+		message.channel.messages
+			.fetch({ limit: 2 })
+			.then((messages) => {
+				const botMsg = messages.last();
+				setTimeout(() => {
+					botMsg.delete();
+				}, 10000);
+			})
+			.catch(console.error);
 	} catch {
 		console.log("Error");
-		const id = message.content.trim();
+		const id = message.author.id;
 		await errorMsg(message, memberWrongIDMsg(id));
+		message.channel.messages
+			.fetch({ limit: 1 })
+			.then((messages) => {
+				const botMsg = messages.last();
+				setTimeout(() => {
+					botMsg.delete();
+				}, 10000);
+			})
+			.catch(console.error);
 	}
 };
