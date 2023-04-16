@@ -1,6 +1,8 @@
 export const errorMsg = async (message, userSendMsg: string) => {
 	try {
-		await message.channel.send(userSendMsg);
+		message.channel
+			.send(userSendMsg)
+			.then((msg) => setTimeout(() => msg.delete(), 10000));
 	} catch (error) {
 		console.log(error.toString());
 	}
