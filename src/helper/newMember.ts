@@ -29,7 +29,17 @@ export const newMembers = async (myGuild: Guild, message: Message, client) => {
 		);
 
 		if (db.discordActive) {
-			return await errorMsg(message, memberWithAlreadyIn(userID));
+			message.channel.messages
+				.fetch({ limit: 2 })
+				.then((messages) => {
+					const botMsg = messages.last();
+					setTimeout(() => {
+						botMsg.delete();
+					}, 10000);
+				})
+				.catch(console.error);
+			return errorMsg(message, memberWithAlreadyIn(userID));
+
 		}
 
 		// else add role to user in discord
@@ -74,7 +84,7 @@ export const newMembers = async (myGuild: Guild, message: Message, client) => {
 			})
 			.catch(console.error);
 	} catch {
-		console.log("Error");
+
 		const id = message.author.id;
 		await errorMsg(message, memberWrongIDMsg(id));
 		message.channel.messages
