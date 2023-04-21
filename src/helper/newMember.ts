@@ -5,7 +5,7 @@ import {
 	personalMsg,
 	verfiyMsg,
 } from "../config/message";
-import { errorMsg } from "./errorHandler";
+import { serverResponse } from "./serverResponse";
 import {
 	campusCommunityRoleID,
 	campusLeadRoleID,
@@ -27,21 +27,13 @@ export const newMembers = async (myGuild: Guild, message: Message, client) => {
 		const { data: db } = await nocodbApiHanlder.get(
 			`/db/data/v1/Platform/User/${id}`,
 		);
+
 		if (!("DiscordActive" in db)) {
 			throw new Error("Invalid database schema");
 		}
 
 		if ("DiscordActive" in db && db.DiscordActive) {
-			message.channel.messages
-				.fetch({ limit: 2 })
-				.then((messages) => {
-					const botMsg = messages.last();
-					setTimeout(() => {
-						botMsg.delete();
-					}, 10000);
-				})
-				.catch(console.error);
-			return errorMsg(message, memberWithAlreadyIn(userID));
+			throw new Error(memberWithAlreadyIn(userID));
 		}
 
 		// else add role to user in discord
@@ -49,13 +41,15 @@ export const newMembers = async (myGuild: Guild, message: Message, client) => {
 		await member.roles.add(memberRoleID);
 
 		// // if the person is a student
-		if (db.description === "Student") {
+		if (db.Description === "Student") {
 			await member.roles.add(campusCommunityRoleID);
-			const fistName = db.name.split(" ")[0];
-			message?.member ? message.member.setNickname(fistName) : null;
+			const firstName = db.Name.split(" ")[0];
+			if ("member" in message) {
+				message.member?.setNickname(firstName);
+			}
 		}
 		// if campusLead
-		if (db.campusLead === true) {
+		if (db.CampusLead) {
 			await member.roles.add(campusLeadRoleID).catch(async (err) => {
 				await msgToChannel(
 					client,
@@ -73,30 +67,17 @@ export const newMembers = async (myGuild: Guild, message: Message, client) => {
 		});
 
 		// showing user that verification successfull
-		await errorMsg(message, verfiyMsg(userID));
+		await serverResponse(message, verfiyMsg(userID));
+
 		// sending verification message to user personally
 		await user.send(personalMsg());
-		message.channel.messages
-			.fetch({ limit: 2 })
-			.then((messages) => {
-				const botMsg = messages.last();
-				setTimeout(() => {
-					botMsg.delete();
-				}, 10000);
-			})
-			.catch(console.error);
 	} catch (e) {
-		console.log(e);
 		const id = message.author.id;
-		await errorMsg(message, memberWrongIDMsg(id));
-		message.channel.messages
-			.fetch({ limit: 1 })
-			.then((messages) => {
-				const botMsg = messages.last();
-				setTimeout(() => {
-					botMsg.delete();
-				}, 10000);
-			})
-			.catch(console.error);
+		if (e.response?.status === 404) {
+			await serverResponse(message, memberWrongIDMsg(id));
+		} else {
+			await serverResponse(message, e.message);
+		}
+		console.log(e);
 	}
 };

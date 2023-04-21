@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 import { Client, GatewayIntentBits, Partials } from "discord.js";
 import { DISCORD_TOKEN, startingChannel, guildID } from "./config";
 import { wrongId } from "./config/message";
-import { errorMsg } from "./helper/errorHandler";
+import { serverResponse } from "./helper/serverResponse";
 import { newMembers } from "./helper/newMember";
 
 // load env file
@@ -26,6 +26,16 @@ client.on("ready", () => {
 // user verification based on nocodb id
 client.on("messageCreate", async (message) => {
 	if (message.channel.id === startingChannel && !message.author.bot) {
+		// clearing user input
+		message.channel.messages
+			.fetch({ limit: 1 })
+			.then((messages) => {
+				const botMsg = messages.last();
+				setTimeout(() => {
+					botMsg.delete();
+				}, 10000);
+			})
+			.catch(console.error);
 		const guild = client.guilds.cache.get(guildID);
 		if (!guild) throw new Error("Could not find guild check your env");
 		newMembers(guild, message, client);
@@ -34,6 +44,13 @@ client.on("messageCreate", async (message) => {
 		message.channel.id === `744627218743033887` &&
 		message.author.id !== "735045662672027718"
 	) {
-		await errorMsg(message, wrongId());
+		await serverResponse(message, wrongId());
 	}
 });
+
+// when user leaves the server this event is triggered
+// (for future usecase)
+// client.on("guildMemberRemove", (member) => {
+// 	console.log(`${member.user.tag} has left the server.`);
+// 	// You can also perform other actions here, such as sending a farewell message or updating a database
+// });
