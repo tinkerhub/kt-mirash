@@ -25,7 +25,7 @@ export const newMembers = async (myGuild: Guild, message: Message, client) => {
 		// accessing the databse through nocodb rest api
 
 		const { data: db } = await nocodbApiHanlder.get(
-			`/db/data/v1/platform/User/${id}`,
+			`/db/data/v1/Platform/User/${id}`,
 		);
 
 		if (db.discordActive) {
@@ -39,7 +39,6 @@ export const newMembers = async (myGuild: Guild, message: Message, client) => {
 				})
 				.catch(console.error);
 			return errorMsg(message, memberWithAlreadyIn(userID));
-
 		}
 
 		// else add role to user in discord
@@ -66,7 +65,7 @@ export const newMembers = async (myGuild: Guild, message: Message, client) => {
 		}
 
 		// changing the discord active to true in database
-		await nocodbApiHanlder.patch(`/db/data/v1/platform/User/${id}`, {
+		await nocodbApiHanlder.patch(`/db/data/v1/Platform/User/${id}`, {
 			discordActive: true,
 		});
 
@@ -84,7 +83,6 @@ export const newMembers = async (myGuild: Guild, message: Message, client) => {
 			})
 			.catch(console.error);
 	} catch {
-
 		const id = message.author.id;
 		await errorMsg(message, memberWrongIDMsg(id));
 		message.channel.messages
