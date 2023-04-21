@@ -27,8 +27,11 @@ export const newMembers = async (myGuild: Guild, message: Message, client) => {
 		const { data: db } = await nocodbApiHanlder.get(
 			`/db/data/v1/Platform/User/${id}`,
 		);
+		if (!("DiscordActive" in db)) {
+			throw new Error("Invalid database schema");
+		}
 
-		if (db.discordActive) {
+		if ("DiscordActive" in db && db.DiscordActive) {
 			message.channel.messages
 				.fetch({ limit: 2 })
 				.then((messages) => {
@@ -82,7 +85,8 @@ export const newMembers = async (myGuild: Guild, message: Message, client) => {
 				}, 10000);
 			})
 			.catch(console.error);
-	} catch {
+	} catch (e) {
+		console.log(e);
 		const id = message.author.id;
 		await errorMsg(message, memberWrongIDMsg(id));
 		message.channel.messages
