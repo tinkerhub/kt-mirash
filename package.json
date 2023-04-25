@@ -4,6 +4,8 @@
   "description": "Discord bot",
   "main": "index.js",
   "scripts": {
+    "deploy": "git pull && pnpm build && pnpm start:service",
+    "start:service": "sudo systemctl restart mirash",
     "start": "node dist/index.js",
     "watch": "tsc -w",
     "dev": "nodemon dist/index.js",
