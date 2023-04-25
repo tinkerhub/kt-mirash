@@ -20,7 +20,7 @@ export const newMembers = async (myGuild: Guild, message: Message, client) => {
 		const id = message.content.trim();
 		const user = message.author;
 		const userID = user.id;
-		const username = user.username + "#" + user.discriminator;
+		const userName = user.username + "#" + user.discriminator;
 
 		// accessing the databse through nocodb rest api
 
@@ -55,15 +55,18 @@ export const newMembers = async (myGuild: Guild, message: Message, client) => {
 					client,
 					errorHandleChannelID,
 					user,
-					username,
+					userName,
 					err,
 				);
 			});
 		}
 
 		// changing the discord active to true in database
+		// adding discord info to database
 		await nocodbApiHanlder.patch(`/db/data/v1/Platform/User/${id}`, {
 			discordActive: true,
+			discordUserId: userID,
+			discordUserName: userName,
 		});
 
 		// showing user that verification successfull
