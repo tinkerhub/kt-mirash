@@ -4,6 +4,7 @@ import { DISCORD_TOKEN, startingChannel, guildID } from "./config";
 import { wrongId } from "./config/message";
 import { serverResponse } from "./helper/serverResponse";
 import { newMembers } from "./helper/newMember";
+import { nocodbApiHanlder } from "./config/apiHandler";
 
 // load env file
 dotenv.config();
@@ -50,7 +51,17 @@ client.on("messageCreate", async (message) => {
 
 // when user leaves the server this event is triggered
 // (for future usecase)
-// client.on("guildMemberRemove", (member) => {
-// 	console.log(`${member.user.tag} has left the server.`);
-// 	// You can also perform other actions here, such as sending a farewell message or updating a database
-// });
+client.on("guildMemberRemove", async (member) => {
+	try {
+		const { data } = await nocodbApiHanlder.get(
+			`db/data/v1/Platform/User/find-one?where=(discordUserId,eq,${member.id})`,
+		);
+
+		await nocodbApiHanlder.patch(`/db/data/v1/Platform/User/${data.Id}`, {
+			discordActive: false,
+		});
+	} catch {
+		console.log("NO USER FOUND IN DB WHEN LEAVING THE SERVER");
+	}
+	// You can also perform other actions here, such as sending a farewell message or updating a database
+});
