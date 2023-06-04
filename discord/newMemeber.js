@@ -6,8 +6,10 @@ const femaleRoleID = config.get('femaleRoleID');
 const errorHandleChannelID = config.get('errorHandleChannelID');
 
 const { errorMsg } = require("../discord/erorMsg");
-const { memberWrongIDMsg, memberWithAlreadyIn, personalMsg, verfiyMsg } = require("../config/var");
+const { memberWrongIDMsg, memberWithAlreadyIn, verfiyMsg } = require("../config/var");
 const { msgToChannel } = require('./msgToChannel');
+
+const onboardUser = require('./onboardUser');
 
 
 exports.newMembers = async(myGuild, base, message, client) => {
@@ -50,7 +52,7 @@ exports.newMembers = async(myGuild, base, message, client) => {
                 }
                 await member.roles.add(memberRoleID)
                 await errorMsg(message, verfiyMsg(userID))
-                await user.send(personalMsg(userID))
+                await onboardUser(message.channel, userID, firstname);
                 await myGuild.members.cache.get(userID).setNickname(`${firstname}`)
 
 
