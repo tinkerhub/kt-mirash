@@ -4,7 +4,7 @@ import { DISCORD_TOKEN, startingChannel, guildID } from "./config";
 import { wrongId } from "./config/message";
 import { serverResponse } from "./helper/serverResponse";
 import { newMembers } from "./helper/newMember";
-import { nocodbApiHanlder } from "./config/apiHandler";
+import {db} from "./helper/firebase";
 
 // load env file
 dotenv.config();
@@ -19,7 +19,7 @@ const client = new Client({
 	],
 	partials: [Partials.Channel],
 });
-client.login(DISCORD_TOKEN);
+client.login(DISCORD_TOKEN).then();
 
 client.on("ready", () => {
 	console.log(`Logged in as ${client.user?.tag}`);
@@ -40,7 +40,7 @@ client.on("messageCreate", async (message) => {
 			.catch(console.error);
 		const guild = client.guilds.cache.get(guildID);
 		if (!guild) throw new Error("Could not find guild check your env");
-		newMembers(guild, message, client);
+		await newMembers(guild, message, client);
 	} else if (
 		!message.author.bot &&
 		message.channel.id === `744627218743033887` &&
@@ -54,11 +54,10 @@ client.on("messageCreate", async (message) => {
 // (for future usecase)
 client.on("guildMemberRemove", async (member) => {
 	try {
-		const { data } = await nocodbApiHanlder.get(
-			`db/data/v1/Platform/User/find-one?where=(discordUserId,eq,${member.id})`,
-		);
+		const docRef = db.collection("users").where("discordUserId", "==", member.id);
+		const doc = (await docRef.get()).docs[0];
 
-		await nocodbApiHanlder.patch(`/db/data/v1/Platform/User/${data.Id}`, {
+		await doc.ref.update({
 			discordActive: false,
 		});
 	} catch {

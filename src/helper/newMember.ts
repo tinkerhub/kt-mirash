@@ -13,7 +13,7 @@ import {
 	memberRoleID,
 } from "../config";
 import { msgToChannel } from "./msgToChannel";
-import { nocodbApiHanlder } from "../config/apiHandler";
+import {db} from "./firebase";
 
 export const newMembers = async (myGuild: Guild, message: Message, client) => {
 	try {
@@ -24,12 +24,11 @@ export const newMembers = async (myGuild: Guild, message: Message, client) => {
 
 		// accessing the databse through nocodb rest api
 
-		const { data: db } = await nocodbApiHanlder.get(
-			`/db/data/v1/Platform/User/${id}`,
-		);
+		const docRef = db.collection("users").where("id", "==", id);
+		const doc = (await docRef.get()).docs[0];
 
-		if (!("DiscordActive" in db)) {
-			throw new Error("Invalid database schema");
+		if(!doc || !doc.exists) {
+			throw new Error(memberWrongIDMsg(userID));
 		}
 
 		if ("DiscordActive" in db && db.DiscordActive) {
@@ -41,15 +40,16 @@ export const newMembers = async (myGuild: Guild, message: Message, client) => {
 		await member.roles.add(memberRoleID);
 
 		// // if the person is a student
-		if (db.Description === "Student") {
+		if (doc.get("description") === "Student") {
 			await member.roles.add(campusCommunityRoleID);
-			const firstName = db.Name.split(" ")[0];
+			const firstName = doc.get("name").split(" ")[0];
+
 			if ("member" in message) {
 				message.member?.setNickname(firstName);
 			}
 		}
 		// if campusLead
-		if (db.CampusLead) {
+		if (doc.get("campusLead")) {
 			await member.roles.add(campusLeadRoleID).catch(async (err) => {
 				await msgToChannel(
 					client,
@@ -63,7 +63,7 @@ export const newMembers = async (myGuild: Guild, message: Message, client) => {
 
 		// changing the discord active to true in database
 		// adding discord info to database
-		await nocodbApiHanlder.patch(`/db/data/v1/Platform/User/${id}`, {
+		await doc.ref.update({
 			discordActive: true,
 			discordUserId: userID,
 			discordUserName: userName,

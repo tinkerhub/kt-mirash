@@ -5,14 +5,12 @@
   "main": "index.js",
   "scripts": {
     "deploy": "git pull && pnpm build && pnpm start:service",
-    "start:service": "sudo systemctl restart mirash",
-    "start": "node dist/index.js",
+    "start": "sudo systemctl restart mirash",
     "watch": "tsc -w",
-    "dev": "nodemon dist/index.js",
+    "dev": "nodemon dist/src/index.js",
     "build": "tsc",
     "lint": "eslint ./src --ext .js,.ts",
-    "lint-fix": "eslint ./src --ext .js,.ts --fix",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint-fix": "eslint ./src --ext .js,.ts --fix"
   },
   "repository": {
     "type": "git",
@@ -36,7 +34,7 @@
     "eslint": "^8.33.0",
     "eslint-config-prettier": "^8.6.0",
     "eslint-plugin-import": "^2.27.5",
-    "husky": "^8.0.3",
+    "nodemon": "^3.0.1",
     "prettier": "^2.8.3",
     "ts-node": "^10.9.1",
     "typescript": "^4.9.5"
@@ -44,6 +42,8 @@
   "dependencies": {
     "axios": "^1.3.2",
     "discord.js": "^14.7.1",
-    "dotenv": "^16.0.3"
+    "dotenv": "^16.0.3",
+    "firebase": "^10.4.0",
+    "firebase-admin": "^11.11.0"
   }
 }
